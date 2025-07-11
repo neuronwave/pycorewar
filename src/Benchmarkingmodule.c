@@ -17,9 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "structmember.h"
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_Check PyLong_Check
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#endif
 #include <time.h>
+#include <string.h>
 #include <MyTypes.h>
 #include <Instruction.h>
 #include <BenchWarrior.h>
@@ -27,27 +34,37 @@
 #include <BenchMARS88.h>
 #include <BenchMARS94nop.h>
 
+/* Forward declarations from Redcodemodule.c */
+typedef struct {
+        PyObject_HEAD
+        u32_t coresize;
+        insn_t insn;
+} Instruction88;
+
+typedef struct {
+        PyObject_HEAD
+        u32_t coresize;
+        insn_t insn;
+} Instruction;
+
+
 /* Copy instruction from instruction to internal format. Return 0 on success,
  * 1 on error. Assume, that both arguments are not NULL.
  */
 u32_t
 copy_instruction(PyObject *src, insn_t *insn)
 {
-	PyBufferProcs *buffer;
-	void *src_insn;
-	int bytes;
-
-	/* Get buffer pointer. */
-	buffer = src->ob_type->tp_as_buffer;
-	bytes = buffer->bf_getreadbuffer(src, 0, &src_insn);
-	if (bytes != sizeof(insn_t)) {
-		return 1;
-	}
-
-	/* Copy instruction. */
-	*insn = *((insn_t *) src_insn);
-
-	return 0;
+        PyObject *view = PyObject_GetAttrString(src, "insn");
+        if (view && PyMemoryView_Check(view)) {
+                Py_buffer *buf = PyMemoryView_GET_BUFFER(view);
+                if (buf->len == sizeof(insn_t)) {
+                        memcpy(insn, buf->buf, sizeof(insn_t));
+                        Py_DECREF(view);
+                        return 0;
+                }
+        }
+        Py_XDECREF(view);
+        return 1;
 }
 
 /* Copy all instructions from a list into an internal representation.
@@ -279,7 +296,7 @@ static void
 MARS_88_dealloc(MARS_88 *self)
 {
 	free(self->core);
-	self->ob_type->tp_free((PyObject *) self);
+	Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 PyDoc_STRVAR(MARS_88_coresize__doc__,
@@ -650,7 +667,11 @@ static PyGetSetDef MARS_88_getseters[] = {
 };
 
 static PyTypeObject MARS_88Type = {
-	PyObject_HEAD_INIT(NULL) 0, 			/*ob_size*/
+#if PY_MAJOR_VERSION >= 3
+        PyVarObject_HEAD_INIT(NULL, 0)
+#else
+        PyObject_HEAD_INIT(NULL) 0,
+#endif
 	"Corewar.Benchmarking.MARS_88",			/*tp_name*/
 	sizeof(MARS_88),			 	/*tp_basicsize*/
 	0,                         			/*tp_itemsize*/
@@ -789,7 +810,7 @@ static void
 MARS_94nop_dealloc(MARS_94nop *self)
 {
 	free(self->core);
-	self->ob_type->tp_free((PyObject *) self);
+	Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 PyDoc_STRVAR(MARS_94nop_coresize__doc__,
@@ -1153,7 +1174,11 @@ static PyGetSetDef MARS_94nop_getseters[] = {
 };
 
 static PyTypeObject MARS_94nopType = {
-	PyObject_HEAD_INIT(NULL) 0, 			/*ob_size*/
+#if PY_MAJOR_VERSION >= 3
+        PyVarObject_HEAD_INIT(NULL, 0)
+#else
+        PyObject_HEAD_INIT(NULL) 0,
+#endif
 	"Corewar.Benchmarking.MARS_94nop",		/*tp_name*/
 	sizeof(MARS_94nop),			 	/*tp_basicsize*/
 	0,                         			/*tp_itemsize*/
@@ -1208,27 +1233,48 @@ PyDoc_STRVAR(module__doc__,
 "  MARS_94nop -- MARS with ICWS '94 draft rules (no P-Space)");
 
 PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_Benchmarking(void)
+#else
 initBenchmarking(void)
+#endif
 {
 	PyObject *m;
 
-	if (PyType_Ready(&MARS_88Type) < 0) {
-		return;
-	}
+        if (PyType_Ready(&MARS_88Type) < 0) {
+                return NULL;
+        }
 
-	if (PyType_Ready(&MARS_94nopType) < 0) {
-		return;
-	}
+        if (PyType_Ready(&MARS_94nopType) < 0) {
+                return NULL;
+        }
 	
-	m = Py_InitModule3("Corewar.Benchmarking", module_methods,
-			   module__doc__);
-	if (m == NULL) {
-		return;
-	}
+#if PY_MAJOR_VERSION >= 3
+        static struct PyModuleDef moduledef = {
+                PyModuleDef_HEAD_INIT,
+                "Corewar.Benchmarking",
+                module__doc__,
+                -1,
+                module_methods
+        };
+        m = PyModule_Create(&moduledef);
+        if (m == NULL) {
+                return NULL;
+        }
+#else
+        m = Py_InitModule3("Corewar.Benchmarking", module_methods,
+                           module__doc__);
+        if (m == NULL) {
+                return;
+        }
+#endif
 	
 	Py_INCREF(&MARS_88Type);
 	PyModule_AddObject(m, "MARS_88", (PyObject *) &MARS_88Type);
 
-	Py_INCREF(&MARS_94nopType);
-	PyModule_AddObject(m, "MARS_94nop", (PyObject *) &MARS_94nopType);
+        Py_INCREF(&MARS_94nopType);
+        PyModule_AddObject(m, "MARS_94nop", (PyObject *) &MARS_94nopType);
+#if PY_MAJOR_VERSION >= 3
+        return m;
+#endif
 }

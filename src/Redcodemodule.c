@@ -17,11 +17,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "structmember.h"
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_Check PyLong_Check
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#define PyString_FromString PyUnicode_FromString
+#define PyString_AsString PyUnicode_AsUTF8
+#endif
 #include <MyTypes.h>
 #include <Instruction.h>
 #include <string.h>
+#include <stdlib.h>
+#include <strings.h>
 
 /*
  * ATTENTION! Be sure to use the same order as in Instruction.h.
@@ -171,7 +181,7 @@ Instruction88_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void 
 Instruction88_dealloc(Instruction88 *self)
 {
-	self->ob_type->tp_free((PyObject*) self);
+	Py_TYPE(self)->tp_free((PyObject*) self);
 }
 
 PyDoc_STRVAR(opcode88__doc__,
@@ -503,14 +513,20 @@ Instruction88_buffer_getsegcount(Instruction88 *self, int *lenp)
 static PyObject *
 Instruction88_getstate(Instruction88 *self)
 {
-	return Py_BuildValue("kkkk", self->coresize, self->insn.insn,
-			     self->insn.a, self->insn.b);
+        return Py_BuildValue("kkkk", self->coresize, self->insn.insn,
+                             self->insn.a, self->insn.b);
+}
+
+static PyObject *
+Instruction88_get_insn(Instruction88 *self, void *closure)
+{
+        return PyMemoryView_FromMemory((char *)&self->insn, sizeof(insn_t), PyBUF_READ);
 }
 
 static PyObject *
 Instruction88_reduce(Instruction88 *self)
 {
-	return Py_BuildValue("(ON)", self->ob_type,
+	return Py_BuildValue("(ON)", Py_TYPE(self),
 			     Instruction88_getstate(self));
 }
 
@@ -536,21 +552,21 @@ static PyGetSetDef Instruction88_getseters[] = {
 	 (setter)Instruction88_SetAField, afield88__doc__, NULL},
 	{"bmode", (getter)Instruction88_GetBMode,
 	 (setter)Instruction88_SetBMode, bmode88__doc__, NULL},
-	{"bfield", (getter)Instruction88_GetBField,
-	 (setter)Instruction88_SetBField, bfield88__doc__, NULL},
-	{NULL} /* sentinel */
+        {"bfield", (getter)Instruction88_GetBField,
+         (setter)Instruction88_SetBField, bfield88__doc__, NULL},
+        {"insn", (getter)Instruction88_get_insn, NULL, NULL, NULL},
+        {NULL} /* sentinel */
 };
 
-static PyBufferProcs Instruction88_as_buffer = {
-	(getreadbufferproc) Instruction88_buffer_getreadbuf,
-	(getwritebufferproc) NULL, /* No writing to buffer supported. */
-	(getsegcountproc) Instruction88_buffer_getsegcount,
-	(getcharbufferproc) NULL,
-};
+/* Buffer protocol is deprecated and removed in Python 3; disable it. */
 
 static PyTypeObject Instruction88Type = {
-	PyObject_HEAD_INIT(NULL) 0, 			/* ob_size */
-	"Corewar.Redcode.Instruction88",		/* tp_name */
+#if PY_MAJOR_VERSION >= 3
+        PyVarObject_HEAD_INIT(NULL, 0)
+#else
+        PyObject_HEAD_INIT(NULL) 0,
+#endif
+        	"Corewar.Redcode.Instruction88",		/* tp_name */
 	sizeof(Instruction88),		 	  	/* tp_basicsize */
 	0,                         			/* tp_itemsize */
 	(destructor)Instruction88_dealloc,	  	/* tp_dealloc */
@@ -567,7 +583,7 @@ static PyTypeObject Instruction88Type = {
 	0,						/* tp_str */
 	0,						/* tp_getattro */
 	0,						/* tp_setattro */
-	&Instruction88_as_buffer,			/* tp_as_buffer */
+	0,			/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	Instruction88__doc__,				/* tp_doc */
 	0,						/* tp_traverse */
@@ -709,7 +725,7 @@ Instruction_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void 
 Instruction_dealloc(Instruction *self)
 {
-	self->ob_type->tp_free((PyObject*) self);
+	Py_TYPE(self)->tp_free((PyObject*) self);
 }
 
 PyDoc_STRVAR(opcode__doc__,
@@ -1086,14 +1102,20 @@ Instruction_buffer_getsegcount(Instruction *self, int *lenp)
 static PyObject *
 Instruction_getstate(Instruction *self)
 {
-	return Py_BuildValue("kkkk", self->coresize, self->insn.insn,
-			     self->insn.a, self->insn.b);
+        return Py_BuildValue("kkkk", self->coresize, self->insn.insn,
+                             self->insn.a, self->insn.b);
+}
+
+static PyObject *
+Instruction_get_insn(Instruction *self, void *closure)
+{
+        return PyMemoryView_FromMemory((char *)&self->insn, sizeof(insn_t), PyBUF_READ);
 }
 
 static PyObject *
 Instruction_reduce(Instruction *self)
 {
-	return Py_BuildValue("(ON)", self->ob_type,
+	return Py_BuildValue("(ON)", Py_TYPE(self),
 			     Instruction_getstate(self));
 }
 
@@ -1109,7 +1131,7 @@ static PyObject *
 Redcode_fromString(PyObject *self, PyObject *args, PyObject *kwds)
 {
 	const char *s;
-	int	    len;
+	Py_ssize_t len;
 	s32_t	    coresize = 8000;
 	s32_t	    standard = STANDARD_94;
 
@@ -1613,20 +1635,20 @@ static PyGetSetDef Instruction_getseters[] = {
 	 (setter)Instruction_SetAField, afield__doc__, NULL},
 	{"bmode", (getter)Instruction_GetBMode,
 	 (setter)Instruction_SetBMode, bmode__doc__, NULL},
-	{"bfield", (getter)Instruction_GetBField,
-	 (setter)Instruction_SetBField, bfield__doc__, NULL},
-	{NULL} /* sentinel */
+        {"bfield", (getter)Instruction_GetBField,
+         (setter)Instruction_SetBField, bfield__doc__, NULL},
+        {"insn", (getter)Instruction_get_insn, NULL, NULL, NULL},
+        {NULL} /* sentinel */
 };
 
-static PyBufferProcs Instruction_as_buffer = {
-	(getreadbufferproc) Instruction_buffer_getreadbuf,
-	(getwritebufferproc) NULL, /* No writing to buffer supported. */
-	(getsegcountproc) Instruction_buffer_getsegcount,
-	(getcharbufferproc) NULL,
-};
+/* Buffer protocol disabled for Python 3. */
 
 static PyTypeObject InstructionType = {
-	PyObject_HEAD_INIT(NULL) 0, 			/*ob_size*/
+#if PY_MAJOR_VERSION >= 3
+        PyVarObject_HEAD_INIT(NULL, 0)
+#else
+        PyObject_HEAD_INIT(NULL) 0,
+#endif
 	"Corewar.Redcode.Instruction", 			/*tp_name*/
 	sizeof(Instruction),		 	  	/*tp_basicsize*/
 	0,                         			/*tp_itemsize*/
@@ -1644,7 +1666,7 @@ static PyTypeObject InstructionType = {
 	0,						/*tp_str*/
 	0,						/*tp_getattro*/
 	0,						/*tp_setattro*/
-	&Instruction_as_buffer,				/*tp_as_buffer*/
+	0,				/*tp_as_buffer*/
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,	/*tp_flags*/
 	Instruction__doc__,				/*tp_doc */
 	0,						/*tp_traverse */
@@ -1693,23 +1715,41 @@ PyDoc_STRVAR(module__doc__,
 "   -- addressing modes");
 
 PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_Redcode(void)
+#else
 initRedcode(void)
+#endif
 {
-	PyObject *m;
-	PyObject *d;
+        PyObject *m;
+        PyObject *d;
 
-	if (PyType_Ready(&Instruction88Type) < 0) {
-		return;
-	}
-	if (PyType_Ready(&InstructionType) < 0) {
-		return;
-	}
+        if (PyType_Ready(&Instruction88Type) < 0) {
+                return NULL;
+        }
+        if (PyType_Ready(&InstructionType) < 0) {
+                return NULL;
+        }
 
-	/* Initialize module. */	
-	m = Py_InitModule3("Redcode", module_methods, module__doc__);
-	if (m == NULL) {
-		return;
-	}
+        /* Initialize module. */
+#if PY_MAJOR_VERSION >= 3
+        static struct PyModuleDef moduledef = {
+                PyModuleDef_HEAD_INIT,
+                "Redcode",
+                module__doc__,
+                -1,
+                module_methods
+        };
+        m = PyModule_Create(&moduledef);
+        if (m == NULL) {
+                return NULL;
+        }
+#else
+        m = Py_InitModule3("Redcode", module_methods, module__doc__);
+        if (m == NULL) {
+                return;
+        }
+#endif
 
 	/* Add classes Instruction88, Instruction */
 	Py_INCREF(&Instruction88Type);
@@ -1719,10 +1759,10 @@ initRedcode(void)
 	PyModule_AddObject(m, "Instruction", (PyObject *) &InstructionType);
 
 	/* Get dict of module. */
-	d = PyModule_GetDict(m);
-	if (d == NULL) {
-		return;
-	}
+        d = PyModule_GetDict(m);
+        if (d == NULL) {
+                return NULL;
+        }
 
 	/* Add instruction set of ICWS '88. */
 	PyModule_AddIntConstant(m, "OPCODE_DAT", DAT);
@@ -1769,6 +1809,9 @@ initRedcode(void)
 	PyModule_AddIntConstant(m, "MODIFIER_F", MODIFIER_F);
 	PyModule_AddIntConstant(m, "MODIFIER_I", MODIFIER_I);
 	PyModule_AddIntConstant(m, "MODIFIER_X", MODIFIER_X);
-	PyModule_AddIntConstant(m, "MODIFIER_AB", MODIFIER_AB);
-	PyModule_AddIntConstant(m, "MODIFIER_BA", MODIFIER_BA);
+        PyModule_AddIntConstant(m, "MODIFIER_AB", MODIFIER_AB);
+        PyModule_AddIntConstant(m, "MODIFIER_BA", MODIFIER_BA);
+#if PY_MAJOR_VERSION >= 3
+        return m;
+#endif
 }

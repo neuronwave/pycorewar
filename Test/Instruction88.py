@@ -18,7 +18,7 @@
 
 import unittest
 import random
-import cStringIO
+import io
 import pickle
 from Corewar.Redcode import *
 
@@ -123,7 +123,7 @@ class TestCase(unittest.TestCase):
     def test_pickle(self):
         """(Un-)Pickling of Corewar.Redcode.Instruction88"""
 
-        f = cStringIO.StringIO()
+        f = io.BytesIO()
 
         insn = Instruction88(12345)
         insn.opcode = OPCODE_SUB
@@ -137,7 +137,7 @@ class TestCase(unittest.TestCase):
             f.seek(0)
             pickled_insn = pickle.load(f)
             self.assertEqual(insn, pickled_insn)
-        except Exception, e:
+        except Exception as e:
             self.fail(str(e))
 
     def test_bugfix_0001(self):
