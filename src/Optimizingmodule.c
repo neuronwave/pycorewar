@@ -17,8 +17,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "structmember.h"
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_Check PyLong_Check
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#endif
 #include <time.h>
 #include <MyTypes.h>
 #include <Instruction.h>
@@ -352,7 +358,7 @@ MARS_94nop_dealloc(MARS_94nop *self)
 {
 	free(self->core);
 	free(self->info);
-	self->ob_type->tp_free((PyObject *) self);
+	Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 PyDoc_STRVAR(MARS_94nop_coresize__doc__,
@@ -762,7 +768,11 @@ static PyGetSetDef MARS_94nop_getseters[] = {
 };
 
 static PyTypeObject MARS_94nopType = {
-	PyObject_HEAD_INIT(NULL) 0, 			/*ob_size*/
+#if PY_MAJOR_VERSION >= 3
+        PyVarObject_HEAD_INIT(NULL, 0)
+#else
+        PyObject_HEAD_INIT(NULL) 0,
+#endif
 	"Corewar.Optimizing.MARS_94nop",		/*tp_name*/
 	sizeof(MARS_94nop),			 	/*tp_basicsize*/
 	0,                         			/*tp_itemsize*/
@@ -816,20 +826,41 @@ PyDoc_STRVAR(module__doc__,
 "  MARS_94nop -- MARS with ICWS '94 draft rules (no P-Space)");
 
 PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_Optimizing(void)
+#else
 initOptimizing(void)
+#endif
 {
 	PyObject *m;
 
-	if (PyType_Ready(&MARS_94nopType) < 0) {
-		return;
-	}
+        if (PyType_Ready(&MARS_94nopType) < 0) {
+                return NULL;
+        }
 	
-	m = Py_InitModule3("Corewar.Optimizing", module_methods,
-			   module__doc__);
-	if (m == NULL) {
-		return;
-	}
+#if PY_MAJOR_VERSION >= 3
+        static struct PyModuleDef moduledef = {
+                PyModuleDef_HEAD_INIT,
+                "Corewar.Optimizing",
+                module__doc__,
+                -1,
+                module_methods
+        };
+        m = PyModule_Create(&moduledef);
+        if (m == NULL) {
+                return NULL;
+        }
+#else
+        m = Py_InitModule3("Corewar.Optimizing", module_methods,
+                           module__doc__);
+        if (m == NULL) {
+                return;
+        }
+#endif
 
-	Py_INCREF(&MARS_94nopType);
-	PyModule_AddObject(m, "MARS_94nop", (PyObject *) &MARS_94nopType);
+        Py_INCREF(&MARS_94nopType);
+        PyModule_AddObject(m, "MARS_94nop", (PyObject *) &MARS_94nopType);
+#if PY_MAJOR_VERSION >= 3
+        return m;
+#endif
 }

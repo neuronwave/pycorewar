@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # Copyright (C) 2006 Jens Gutzeit <jens@jgutzeit.de>
 #
@@ -40,13 +40,13 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Topic :: Simulation',
                'Programming Language :: C',
                'Programming Language :: Python']
-PLATFORMS = 'Python 2.3 and later.'
+PLATFORMS = 'Python 3.6 and later.'
 
-EXTRA_COMPILE_ARGS = ['-O3', '-funroll-all-loops']
+EXTRA_COMPILE_ARGS = ['-O3', '-funroll-all-loops', '-std=c99']
 
 # Check Python version
-if sys.version < '2.3.0':
-    raise RuntimeError, 'PyCorewar requires at least Python 2.3 to build.'
+if sys.version_info < (3, 6):
+    raise RuntimeError('PyCorewar requires at least Python 3.6 to build.')
 
 core.setup(
     name=NAME,

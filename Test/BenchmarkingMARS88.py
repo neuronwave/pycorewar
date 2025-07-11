@@ -63,7 +63,7 @@ class TestCase(unittest.TestCase):
 
         try:
             result = mars88.run((w1,w1), rounds=1)
-        except ValueError, e:
+        except ValueError as e:
             pass
         else:
             self.fail()
