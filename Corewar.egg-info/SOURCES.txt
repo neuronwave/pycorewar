@@ -1,5 +1,6 @@
 COPYING
 README.md
+pyproject.toml
 setup.py
 Corewar.egg-info/PKG-INFO
 Corewar.egg-info/SOURCES.txt

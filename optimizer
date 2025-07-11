@@ -64,7 +64,7 @@ def optimized_mov_a(amode, bmode, config):
     level = 4
     s = ''
     bmode_val = 'ip->b'
-        
+
     # Evaluate A-operand.
     aAddr_a = 'aAddr->a'
     if amode == '#':
@@ -141,7 +141,7 @@ def optimized_mov_a(amode, bmode, config):
         s += indent('INCMOD(*tmp_field);', level)
         aAddr_a = 'ra_a'
     else:
-        print 'Invalid A-mode (%s) in mov.a.' % amode
+        print(f'Invalid A-mode ({amode}) in mov.a.')
         sys.exit(1)
     s += '\n'
 
@@ -178,7 +178,7 @@ def optimized_mov_a(amode, bmode, config):
         s += indent('ADDADDR(bAddr, bAddr->a);', level)
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invald B-mode (%s) for mov.a' % bmode
+        print('Invald B-mode (%s) for mov.a' % bmode)
         sys.exit(1)
     s += '\n'
 
@@ -200,7 +200,7 @@ def optimized_mov_i(amode, bmode, config):
     level = 4
     s = ''
     bmode_val = 'ip->b'
-        
+
     # Evaluate A-operand.
     aAddr_insn = 'aAddr->insn'
     aAddr_a = 'aAddr->a'
@@ -306,7 +306,7 @@ def optimized_mov_i(amode, bmode, config):
             aAddr_b = 'ra_b'
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid A-mode (%s) in mov.i.' % amode
+        print('Invalid A-mode (%s) in mov.i.' % amode)
         sys.exit(1)
     s += '\n'
 
@@ -343,7 +343,7 @@ def optimized_mov_i(amode, bmode, config):
         s += indent('ADDADDR(bAddr, bAddr->a);', level)
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invald B-mode (%s) for mov.b' % bmode
+        print(f'Invalid B-mode ({bmode}) for mov.b')
         sys.exit(1)
     s += '\n'
 
@@ -439,7 +439,7 @@ def optimized_spl(modifier, amode, bmode, config):
         s += indent('ADDADDR(aAddr, aAddr->a);', level)
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid A-mode (%s) in spl.' % amode
+        print(f'Invalid A-mode ({amode}) in spl.')
         sys.exit(1)
     s += indent('/* No need to save ra_a or ra_b. */', level)
     s += '\n'
@@ -464,7 +464,7 @@ def optimized_spl(modifier, amode, bmode, config):
         s += indent('ASSIGNADDR(bAddr, ip, %s);' % bmode_val, level)
         s += indent('INCMOD(bAddr->a);', level)
     else:
-        print 'Invalid B-mode (%s) in spl.' % bmode
+        print(f'Invalid B-mode ({bmode}) in spl.')
         sys.exit(1)
     s += '\n'
 
@@ -547,9 +547,9 @@ def optimized_dat(modifier, amode, bmode, config):
             s += indent('INCMOD(aAddr->a);', level)
         s += '\n'
     else:
-        print 'Invalid A-mode (%s) in dat.' % amode
+        print(f'Invalid A-mode ({amode}) in dat.')
         sys.exit(1)
-        
+
     # B-operand
     if bmode in ('#', '$', '@', '*'):
         s += indent('/* No need to evaluate B-operand. */', level)
@@ -579,7 +579,7 @@ def optimized_dat(modifier, amode, bmode, config):
         s += indent('INCMOD(ip->a);', level)
         s += '\n'
     else:
-        print 'Invalid B-mode (%s) in dat.' % bmode
+        print(f'Invalid B-mode ({bmode}) in dat.')
         sys.exit(1)
 
     # Execute instruction.
@@ -600,7 +600,7 @@ def optimized_djn(modifier, amode, bmode, config):
     level = 4
     s = ''
     bmode_val = 'ip->b'
-    
+
     # Evaluate A-operand.
     if amode == '#':
         s += indent('/* Evaluate A-operand. */', level)
@@ -618,7 +618,7 @@ def optimized_djn(modifier, amode, bmode, config):
         s += indent('rb_b = ip->b;', level)
         s += '\n'
         bmode_val = 'rb_b'
-        
+
         s += indent('/* Evaluate A-operand. */', level)
         s += indent('ASSIGNADDR(aAddr, ip, ip->a);', level)
         s += indent('DECMOD(aAddr->b);', level)
@@ -663,10 +663,10 @@ def optimized_djn(modifier, amode, bmode, config):
         s += indent('ADDADDR(aAddr, aAddr->a);', level)
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid A-mode (%s) in djn.' % amode
+        print(f'Invalid A-mode ({amode}) in djn.')
         sys.exit(1)
     s += '\n'
-    
+
     # Evaluate B-operand.
     s += indent('/* Evaluate B-operand. */', level)
     if bmode == '#':
@@ -758,7 +758,7 @@ def optimized_djn(modifier, amode, bmode, config):
             s += indent('rb_b = bAddr->b;', level)
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid B-mode (%s) in djn.' % bmode
+        print(f'Invalid B-mode ({bmode}) in djn.')
         sys.exit(1)
     s += '\n'
 
@@ -774,7 +774,7 @@ def optimized_djn(modifier, amode, bmode, config):
         s += indent('DECMOD(bAddr->b);', level)
         s += indent('if ((rb_a == 1) && (rb_b == 1)) {', level)
     else:
-        print 'Invalid modifier (%s) in djn.' % modifier
+        print(f'Invalid modifier ({modifier}) in djn.')
         sys.exit(1)
 
     s += pq_next_insn_code('ip', level + 1, config)
@@ -846,7 +846,7 @@ def optimized_jmp(modifier, amode, bmode, config):
         s += indent('ADDADDR(aAddr, aAddr->a);', level)
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid A-mode (%s) in jmp.' % amode
+        print(f'Invalid A-mode ({amode}) in jmp.')
         sys.exit(1)
     s += indent('/* No need to save ra_a or ra_b. */', level)
     s += '\n'
@@ -871,7 +871,7 @@ def optimized_jmp(modifier, amode, bmode, config):
         s += indent('ASSIGNADDR(bAddr, ip, %s);' % bmode_val, level)
         s += indent('INCMOD(bAddr->a);', level)
     else:
-        print 'Invalid B-mode (%s) in jmp.' % bmode
+        print(f'Invalid B-mode ({bmode}) in jmp.')
         sys.exit(1)
     s += '\n'
 
@@ -966,7 +966,7 @@ def optimized_add(modifier, amode, bmode, config):
             aAddr_b = 'ra_b'
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid A-mode (%s) for add.' % amode
+        print(f'Invalid A-mode ({amode}) for add.')
         sys.exit(1)
     s += '\n'
 
@@ -1023,7 +1023,7 @@ def optimized_add(modifier, amode, bmode, config):
             bAddr_b = 'rb_b'
         s += indent('INCMOD(*tmp_field);', level)
     else:
-        print 'Invalid B-mode (%s) for add.' % bmode
+        print(f'Invalid B-mode ({bmode}) for add.')
         sys.exit(1)
     s += '\n'
 
@@ -1052,7 +1052,7 @@ def optimized_add(modifier, amode, bmode, config):
         s += indent('ADDMOD(%s->a, %s, %s);' % (bAddr, bAddr_a, aAddr_b),\
                     level)
     else:
-        print 'Invalid modifier (%s) for add.' % modifier
+        print(f'Invalid modifier ({modifier}) for add.')
         sys.exit(1)
     s += '\n'
 
@@ -1087,7 +1087,7 @@ def create_88_run(config, prefix, src):
         template_name += '_switched'
     template_name += '.template'
     cat(template_name, src)
-    
+
     cat(prefix + '88_loop_start.template', src)
 
     # run(..)/switch + end of function
@@ -1107,7 +1107,7 @@ def create_88_run(config, prefix, src):
         pq_append += 'NI_APPEND'
         next_ip += 'NI_NEXT'
 
-    num_switches = config.getint('88 MARS', 'number_of_switches') 
+    num_switches = config.getint('88 MARS', 'number_of_switches')
     if num_switches == 1:
         # Code for getting IP + create replacement for PQ_APPEND
         code = indent('/* Get instruction pointer. */')
@@ -1189,7 +1189,7 @@ def create_88_run(config, prefix, src):
                     code += indent('if (--cycle == 0) goto round_done;') + '\n'
                     src.write(code)
 
-        cat(prefix + 'run_end_odd_switched.template', src) 
+        cat(prefix + 'run_end_odd_switched.template', src)
 
 def create_88_p_run(config, prefix, src):
     """Create p_run(..) in src/BenchMARS88.c with the given configuration and
@@ -1205,7 +1205,7 @@ def create_88_p_run(config, prefix, src):
         template_name += '_switched'
     template_name += '.template'
     cat(template_name, src)
-    
+
     cat(prefix + '88_loop_start.template', src)
 
     # run(..)/switch + end of function
@@ -1225,7 +1225,7 @@ def create_88_p_run(config, prefix, src):
         pq_append += 'NI_APPEND'
         next_ip += 'NI_NEXT'
 
-    num_switches = config.getint('88 MARS', 'number_of_switches') 
+    num_switches = config.getint('88 MARS', 'number_of_switches')
     if num_switches == 1:
         # Code for getting IP + create replacement for PQ_APPEND
         code = indent('/* Get instruction pointer. */')
@@ -1307,7 +1307,7 @@ def create_88_p_run(config, prefix, src):
                     code += indent('if (--cycle == 0) goto round_done;') + '\n'
                     src.write(code)
 
-        cat(prefix + 'run_end_odd_switched.template', src) 
+        cat(prefix + 'run_end_odd_switched.template', src)
 
 def create_88_mw_run(config, prefix, src):
     """Create mw_run(..) in src/BenchMARS88.c with the given configuration and
@@ -1319,7 +1319,7 @@ def create_88_mw_run(config, prefix, src):
     template_name += config.get('88 MARS', 'process_queue_size')
     template_name += '.template'
     cat(template_name, src)
-    
+
     cat(prefix + '88_mw_run_loop_start.template', src)
 
     # run(..)/switch + end of function
@@ -1356,16 +1356,16 @@ def create_88_mw_run(config, prefix, src):
 def create_88(config):
     """Create src/BenchMARS88.c with the given configuration."""
 
-    print 'Creating src/BenchMARS88.c ...'
+    print('Creating src/BenchMARS88.c ...')
     src = open(os.path.normpath('src/BenchMARS88.c'), 'w')
     prefix = 'Optimization/Templates/'
 
     cat(prefix + '88_header.template', src)
-    print '\tCreating code for function \'run\' ...'
+    print('\tCreating code for function \'run\' ...')
     create_88_run(config, prefix, src)
-    print '\tCreating code for function \'p_run\' ...'
+    print('\tCreating code for function \'p_run\' ...')
     create_88_p_run(config, prefix, src)
-    print '\tCreating code for function \'mw_run\' ...'
+    print('\tCreating code for function \'mw_run\' ...')
     create_88_mw_run(config, prefix, src)
 
     src.close()
@@ -1382,7 +1382,7 @@ def create_94nop_run(config, prefix, src, freq):
         template_name += '_interleaved_pq'
     template_name += '.template'
     cat(template_name, src)
-    
+
     cat(prefix + '94nop_loop_start.template', src)
 
     # run(..)/switch + end of function
@@ -1414,8 +1414,7 @@ def create_94nop_run(config, prefix, src, freq):
         code += indent('switch(ip->insn) {')
         src.write(code)
         for (opcode, modifier, amode, bmode) in freq[:num_insns]:
-            print '\t\tCreating optimized code for %s.%s %s %s' %\
-                  (opcode, modifier, amode, bmode)
+            print(f'\t\tCreating optimized code for {opcode}.{modifier} {amode} {bmode}')
 
             code = 'case INSN(%s, MODIFIER_%s, %s, %s):' % (opcode.upper(),\
                    modifier.upper(), MODES[amode], MODES[bmode])
@@ -1466,7 +1465,7 @@ def create_94nop_p_run(config, prefix, src, freq):
         template_name += '_interleaved_pq'
     template_name += '.template'
     cat(template_name, src)
-    
+
     cat(prefix + '94nop_loop_start.template', src)
 
     # run(..)/switch + end of function
@@ -1498,8 +1497,7 @@ def create_94nop_p_run(config, prefix, src, freq):
         code += indent('switch(ip->insn) {')
         src.write(code)
         for (opcode, modifier, amode, bmode) in freq[:num_insns]:
-            print '\t\tCreating optimized code for %s.%s %s %s' %\
-                  (opcode, modifier, amode, bmode)
+            print(f'\t\tCreating optimized code for {opcode}.{modifier} {amode} {bmode}')
 
             code = 'case INSN(%s, MODIFIER_%s, %s, %s):' % (opcode.upper(),\
                    modifier.upper(), MODES[amode], MODES[bmode])
@@ -1541,16 +1539,16 @@ def create_94nop_p_run(config, prefix, src, freq):
 def create_94nop(config, freq):
     """Create src/BenchMARS94nop.c with the given configuration."""
 
-    print 'Creating src/BenchMARS94nop.c ...'
+    print('Creating src/BenchMARS94nop.c ...')
     src = open(os.path.normpath('src/BenchMARS94nop.c'), 'w')
     prefix = 'Optimization/Templates/'
 
     cat(prefix + '94nop_header.template', src)
-    print '\tCreating code for function \'run\' ...'
+    print('\tCreating code for function \'run\' ...')
     create_94nop_run(config, prefix, src, freq)
-    print '\tCreating code for function \'p_run\' ...'
+    print('\tCreating code for function \'p_run\' ...')
     create_94nop_p_run(config, prefix, src, freq)
-    #print '\tCreating code for function \'mw_run\' ...'
+    #print('\tCreating code for function \'mw_run\' ...')
     #create_94nop_mw_run(config, prefix, src)
 
     cat(prefix + '94nop_rest.template', src)
@@ -1560,7 +1558,7 @@ def create_94nop(config, freq):
 def create_MyTypes(config):
     """Create src/MyTypes.h with the given configuration."""
 
-    print 'Creating src/MyTypes.h ...'
+    print('Creating src/MyTypes.h ...')
     src = open(os.path.normpath('src/MyTypes.h'), 'w')
     prefix = 'Optimization/Templates/'
 
@@ -1575,7 +1573,7 @@ def read_frequencies(fname):
 
     prefix = 'Optimization/Tables/'
     if not os.path.exists(prefix + fname):
-        print 'Cannot find %s' % (prefix + fname)
+        print(f'Cannot find {prefix + fname}')
         sys.exit(1)
 
     freq = []
@@ -1585,12 +1583,12 @@ def read_frequencies(fname):
 
         # Ignore comments and empty lines.
         if line == '' or line.startswith('#'):
-            continue 
+            continue
 
         # Strip away leading rank.
         pos = line.find('. ')
         if pos == -1:
-            print 'ERROR: Invalid line.'
+            print('ERROR: Invalid line.')
             sys.exit(1)
         line = line[pos + 2:]
 
@@ -1606,9 +1604,9 @@ def read_frequencies(fname):
     return freq
 
 if __name__ == '__main__':
-    # Show version information. 
-    print 'Optimizer for PyCorewar %s -' % PYCOREWAR_VERSION,
-    print '(Version %s, %s)\n' % (VERSION, DATE)
+    # Show version information.
+    print(f'Optimizer for PyCorewar {PYCOREWAR_VERSION} -', end=' ')
+    print(f'(Version {VERSION}, {DATE})\n')
 
     # Check prerequisites for the optimizer.
 
@@ -1627,51 +1625,42 @@ if __name__ == '__main__':
     # Run plausibility checks.
     options.conf_file = os.path.normpath(options.conf_file)
     if not os.path.exists(options.conf_file):
-        print 'ERROR: Cannot find config file \'%s\'.' % options.conf_file
+        print(f'ERROR: Cannot find config file \'{options.conf_file}\'.')
         sys.exit(1)
 
     # Read configuation.
-    print 'Reading configuration from \'%s\' ...' % options.conf_file
+    print(f'Reading configuration from \'{options.conf_file}\' ...')
     config = ConfigParser.SafeConfigParser()
     config.read(options.conf_file)
 
     # Check configuration and set defaults, if no value is given.
     if not config.has_section('88 MARS'):
-        print '\tERROR: Missing \'88 MARS\' section.'
+        print('\tERROR: Missing \'88 MARS\' section.')
         sys.exit(1)
     if not config.has_section('94nop MARS'):
-        print '\tERROR: Missing \'94nop MARS\' section.'
+        print('\tERROR: Missing \'94nop MARS\' section.')
         sys.exit(1)
 
     # General settings.
-    print 'General settings'
-    print '\tSize of one field                  : %s' %\
-          config.get('General', 'size_of_field')
+    print('General settings')
+    print(f'\tSize of one field                  : {config.get("General", "size_of_field")}')
 
     # Show settings for 88 MARS.
-    print 'Settings for 88 MARS'
-    print '\tSize of process queue              : %s' %\
-          config.get('88 MARS', 'process_queue_size')
-    print '\tUse interleaved process queue      : %s' %\
-          config.get('88 MARS', 'interleaved_process_queue')
-    print '\tSize of one switch                 : %s' %\
-          config.get('88 MARS', 'size_of_switch')
-    print '\tNumber of switches                 : %d' %\
-          config.getint('88 MARS', 'number_of_switches')
+    print('Settings for 88 MARS')
+    print(f'\tSize of process queue              : {config.get("88 MARS", "process_queue_size")}')
+    print(f'\tUse interleaved process queue      : {config.get("88 MARS", "interleaved_process_queue")}')
+    print(f'\tSize of one switch                 : {config.get("88 MARS", "size_of_switch")}')
+    print(f'\tNumber of switches                 : {config.getint("88 MARS", "number_of_switches")}')
 
     # Show setting for 94nop MARS.
-    print 'Settings for 94nop MARS'
-    print '\tSize of process queue              : %s' %\
-          config.get('94nop MARS', 'process_queue_size')
-    print '\tUse interleaved process queue      : %s' %\
-          config.get('94nop MARS', 'interleaved_process_queue')
-    print '\tFile with instruction frequencies  : Optimization/Tables/%s' %\
-          config.get('94nop MARS', 'insn_frequencies')
-    print '\tNumber of optimized instructions   : %d' %\
-          config.getint('94nop MARS', 'number_of_optimized_insns')
+    print('Settings for 94nop MARS')
+    print(f'\tSize of process queue              : {config.get("94nop MARS", "process_queue_size")}')
+    print(f'\tUse interleaved process queue      : {config.get("94nop MARS", "interleaved_process_queue")}')
+    print(f'\tFile with instruction frequencies  : Optimization/Tables/{config.get("94nop MARS", "insn_frequencies")}')
+    print(f'\tNumber of optimized instructions   : {config.getint("94nop MARS", "number_of_optimized_insns")}')
 
     # Reading instruction frequencies.
-    print 'Reading instruction frequencies ...'
+    print('Reading instruction frequencies ...')
     fname = config.get('94nop MARS', 'insn_frequencies')
     insn_freq_94nop = read_frequencies(fname)
 
