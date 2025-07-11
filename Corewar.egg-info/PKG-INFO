@@ -1,4 +1,4 @@
-Metadata-Version: 2.4
+Metadata-Version: 2.1
 Name: Corewar
 Version: 0.2.0
 Summary: A fast MARS (Memory Array Redcode Simulator) for debugging and benchmarking
@@ -17,7 +17,6 @@ Classifier: Programming Language :: Python
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: COPYING
-Dynamic: license-file
 
 # PyCorewar
 
