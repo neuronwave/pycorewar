@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Corewar"
+version = "0.2.0"
+description = "A fast MARS (Memory Array Redcode Simulator) for debugging and benchmarking"
+authors = [
+    {name = "Jens Gutzeit", email = "jens@jgutzeit.de"},
+]
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "GPL-2.0-or-later"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Intended Audience :: Developers",
+    "Operating System :: Unix",
+    "Topic :: Simulation",
+    "Programming Language :: C",
+    "Programming Language :: Python",
+]
+
+[project.urls]
+Homepage = "http://corewars.jgutzeit.de/pycorewar/index.en.html"
+Download = "http://corewars.jgutzeit.de/pycorewar/download/PyCorwar-0.2.0.tar.bz2"
+
+[tool.setuptools]
+packages = ["Corewar"]
+package-dir = {"Corewar" = "corewar"}

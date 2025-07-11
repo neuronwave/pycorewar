@@ -1,0 +1,16 @@
+COPYING
+README.md
+setup.py
+Corewar.egg-info/PKG-INFO
+Corewar.egg-info/SOURCES.txt
+Corewar.egg-info/dependency_links.txt
+Corewar.egg-info/top_level.txt
+corewar/__init__.py
+src/BenchMARS88.c
+src/BenchMARS94nop.c
+src/BenchPositioning.c
+src/BenchWarrior.c
+src/Benchmarkingmodule.c
+src/OptMARS94nop.c
+src/Optimizingmodule.c
+src/Redcodemodule.c

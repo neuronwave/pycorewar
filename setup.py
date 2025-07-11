@@ -16,69 +16,53 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-# Usage: python setup.py install
+# Usage: pip install .
 
-from distutils import core
-from distutils.core import Extension
+from setuptools import setup, Extension
 import sys
 
-# General information about PyCorewar.
-NAME = 'Corewar'
-VERSION = '0.2.0'
-DESCRIPTION = 'A fast MARS (Memory Array Redcode Simulator) for debugging '\
-              'and benchmarking'
-AUTHOR_NAME = 'Jens Gutzeit'
-AUTHOR_EMAIL = 'jens@jgutzeit.de'
-HOMEPAGE = 'http://corewars.jgutzeit.de/pycorewar/index.en.html'
-DOWNLOAD = 'http://corewars.jgutzeit.de/pycorewar/download/'\
-           'PyCorwar-%s.tar.bz2' % VERSION
-CLASSIFIERS = ['Development Status :: 3 - Alpha',
-               'Environment :: Console',
-               'License :: OSI Approved :: GNU General Public License (GPL)',
-               'Intended Audience :: Developers',
-               'Operating System :: Unix',
-               'Topic :: Simulation',
-               'Programming Language :: C',
-               'Programming Language :: Python']
-PLATFORMS = 'Python 3.6 and later.'
 
-EXTRA_COMPILE_ARGS = ['-O3', '-funroll-all-loops', '-std=c99']
+EXTRA_COMPILE_ARGS = ["-O3", "-funroll-all-loops", "-std=c99"]
 
 # Check Python version
 if sys.version_info < (3, 6):
-    raise RuntimeError('PyCorewar requires at least Python 3.6 to build.')
+    raise RuntimeError("PyCorewar requires at least Python 3.6 to build.")
 
-core.setup(
-    name=NAME,
-    version=VERSION,
-    description=DESCRIPTION,
-    author=AUTHOR_NAME,
-    author_email=AUTHOR_EMAIL,
-    url=HOMEPAGE,
-    download_url=DOWNLOAD,
-    classifiers=CLASSIFIERS,
-    platforms=PLATFORMS,
-    packages=['Corewar', ],
-    package_dir={'Corewar': 'corewar'},
-    py_modules=[],
-    ext_modules=[Extension('Corewar.Redcode',
-                           include_dirs=['src/'],
-                           sources=['src/Redcodemodule.c',],
-                           extra_compile_args=EXTRA_COMPILE_ARGS),
-                 Extension('Corewar.Benchmarking',
-                           include_dirs=['src/'],
-                           sources=['src/BenchWarrior.c',
-                                    'src/BenchPositioning.c',
-                                    'src/BenchMARS88.c',
-                                    'src/BenchMARS94nop.c',
-                                    'src/Benchmarkingmodule.c'],
-                           extra_compile_args=EXTRA_COMPILE_ARGS),
-                 Extension('Corewar.Optimizing',
-                           include_dirs=['src/'],
-                           sources=['src/BenchWarrior.c',
-			       'src/BenchPositioning.c',
-				    'src/OptMARS94nop.c',
-				    'src/Optimizingmodule.c'],
-                           extra_compile_args=EXTRA_COMPILE_ARGS),
-                ],
-      )
+# C extension compilation arguments
+EXTRA_COMPILE_ARGS = ["-O3", "-funroll-all-loops", "-std=c99"]
+
+setup(
+    ext_modules=[
+        Extension(
+            "Corewar.Redcode",
+            include_dirs=["src/"],
+            sources=[
+                "src/Redcodemodule.c",
+            ],
+            extra_compile_args=EXTRA_COMPILE_ARGS,
+        ),
+        Extension(
+            "Corewar.Benchmarking",
+            include_dirs=["src/"],
+            sources=[
+                "src/BenchWarrior.c",
+                "src/BenchPositioning.c",
+                "src/BenchMARS88.c",
+                "src/BenchMARS94nop.c",
+                "src/Benchmarkingmodule.c",
+            ],
+            extra_compile_args=EXTRA_COMPILE_ARGS,
+        ),
+        Extension(
+            "Corewar.Optimizing",
+            include_dirs=["src/"],
+            sources=[
+                "src/BenchWarrior.c",
+                "src/BenchPositioning.c",
+                "src/OptMARS94nop.c",
+                "src/Optimizingmodule.c",
+            ],
+            extra_compile_args=EXTRA_COMPILE_ARGS,
+        ),
+    ],
+)

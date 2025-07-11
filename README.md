@@ -12,19 +12,56 @@ At the moment the following features are supported:
 
 ## Requirements
 
-You need Python 2 (!) and a recent version of GCC for compiling PyCorewar.
+You need Python 3.6 or newer and a recent version of GCC for compiling PyCorewar.
 
-## How to build
+## How to build and install
 
-  `python2 setup.py build`
+### Using pip (recommended)
 
-## How to install
+Install from the current directory:
 
-  `python2 setup.py install`
+```bash
+# Install in user directory (no admin privileges required)
+pip install --user .
+
+# Or, for development mode (changes to source immediately available)
+pip install --user -e .
+```
+
+### Using a virtual environment (recommended for development)
+
+```bash
+# Create a virtual environment
+python3 -m venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in development mode
+pip install -e .
+
+# When done, deactivate the virtual environment
+deactivate
+```
+
+### Legacy method (not recommended)
+
+```bash
+python3 setup.py build
+python3 setup.py install
+```
 
 ## Bug reports
 
 Please send any bug reports to [jens@gutzeit.name](mailto:jens@gutzeit.name).
+
+## Note on Python Packaging
+
+This package uses modern Python packaging with `pyproject.toml`. If you encounter any packaging issues, make sure you have the latest version of pip and setuptools:
+
+```bash
+pip install --upgrade pip setuptools wheel
+```
 
 ## Thanks
 
