@@ -62,6 +62,12 @@ class CustomBuildExt(build_ext):
         # Ensure output directory exists
         os.makedirs(package_dir, exist_ok=True)
 
+        # Copy the existing __init__.py if it exists in the source
+        src_init = Path('Corewar') / '__init__.py'
+        if src_init.exists():
+            import shutil
+            shutil.copy2(src_init, package_dir / '__init__.py')
+
         # Determine Python include paths and extension suffix
         python_include = Path(sys.executable).parent.parent / 'include' / f'python{sys.version_info.major}.{sys.version_info.minor}'
         if not python_include.exists():
@@ -132,6 +138,9 @@ class CustomBuildExt(build_ext):
             ldflags
         )
 
+        # Ensure output directory exists
+        os.makedirs(package_dir, exist_ok=True)
+
         # Create or update __init__.py
         init_path = package_dir / "__init__.py"
         if not init_path.exists():
@@ -140,11 +149,18 @@ class CustomBuildExt(build_ext):
 
         print(f"Compilation complete. Extension modules are in {package_dir}/")
 
+        # Make sure wheel directory exists for installation
+        wheel_dir = Path(self.build_lib).parent / 'bdist.macosx-10.9-universal2' / 'wheel' / 'Corewar'
+        os.makedirs(wheel_dir, exist_ok=True)
+
     def compile_module(self, name, source_files, output_dir, extension_suffix, cflags, ldflags):
         """
         Compile a single module with the given source files
         """
         print(f"Compiling {name} module...")
+
+        # Ensure output directory exists
+        os.makedirs(output_dir, exist_ok=True)
 
         output_file = output_dir / f"{name}{extension_suffix}"
 
@@ -192,7 +208,14 @@ ext_modules = [
     ),
 ]
 
+# Create empty directories that might be needed during installation
+for directory in ['build/lib.macosx-10.9-universal2-cpython-310/Corewar',
+                 'build/bdist.macosx-10.9-universal2/wheel/Corewar']:
+    os.makedirs(directory, exist_ok=True)
+
 setup(
     ext_modules=ext_modules,
     cmdclass={"build_ext": CustomBuildExt},
+    packages=["Corewar"],
+    package_data={"Corewar": ["*.so"]},
 )

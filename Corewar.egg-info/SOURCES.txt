@@ -3,7 +3,13 @@ README.md
 pyproject.toml
 setup.cfg
 setup.py
+./Corewar/Benchmarking.cpython-310-darwin.so
+./Corewar/Optimizing.cpython-310-darwin.so
+./Corewar/Redcode.cpython-310-darwin.so
 ./Corewar/__init__.py
+Corewar/Benchmarking.cpython-310-darwin.so
+Corewar/Optimizing.cpython-310-darwin.so
+Corewar/Redcode.cpython-310-darwin.so
 Corewar/__init__.py
 Corewar.egg-info/PKG-INFO
 Corewar.egg-info/SOURCES.txt

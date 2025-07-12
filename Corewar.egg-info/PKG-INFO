@@ -5,12 +5,11 @@ Summary: A fast MARS (Memory Array Redcode Simulator) for debugging and benchmar
 Home-page: http://corewars.jgutzeit.de/pycorewar/index.en.html
 Author: Jens Gutzeit
 Author-email: Jens Gutzeit <jens@jgutzeit.de>
-License: GPL-2.0-or-later
+License-Expression: GPL-2.0-or-later
 Project-URL: Homepage, http://corewars.jgutzeit.de/pycorewar/index.en.html
 Project-URL: Download, http://corewars.jgutzeit.de/pycorewar/download/PyCorwar-0.2.0.tar.bz2
 Classifier: Development Status :: 3 - Alpha
 Classifier: Environment :: Console
-Classifier: License :: OSI Approved :: GNU General Public License (GPL)
 Classifier: Intended Audience :: Developers
 Classifier: Operating System :: Unix
 Classifier: Topic :: Simulation

@@ -1,10 +1,6 @@
 [build-system]
 requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
-
-[tool.build]
-# Set to "1", "true", or "yes" to use manual compilation
-manual-build = "yes"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "Corewar"
@@ -15,11 +11,10 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.6"
-license = {text = "GPL-2.0-or-later"}
+license = "GPL-2.0-or-later"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
-    "License :: OSI Approved :: GNU General Public License (GPL)",
     "Intended Audience :: Developers",
     "Operating System :: Unix",
     "Topic :: Simulation",
@@ -33,6 +28,10 @@ Download = "http://corewars.jgutzeit.de/pycorewar/download/PyCorwar-0.2.0.tar.bz
 
 [tool.setuptools]
 packages = ["Corewar"]
+package-dir = {"" = "."}
 
 [tool.setuptools.cmdclass]
 build_ext = "setup.CustomBuildExt"
+
+[tool.setuptools.package-data]
+Corewar = ["*.so"]
