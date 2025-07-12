@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [tool.build]
 # Set to "1", "true", or "yes" to use manual compilation
-manual-build = "auto"
+manual-build = "yes"
 
 [project]
-name = "corewar"
+name = "Corewar"
 version = "0.2.0"
 description = "A fast MARS (Memory Array Redcode Simulator) for debugging and benchmarking"
 authors = [
@@ -33,7 +33,6 @@ Download = "http://corewars.jgutzeit.de/pycorewar/download/PyCorwar-0.2.0.tar.bz
 
 [tool.setuptools]
 packages = ["Corewar"]
-package-dir = {"Corewar" = "Corewar"}
 
 [tool.setuptools.cmdclass]
 build_ext = "setup.CustomBuildExt"

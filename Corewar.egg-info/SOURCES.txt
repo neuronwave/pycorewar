@@ -3,6 +3,7 @@ README.md
 pyproject.toml
 setup.cfg
 setup.py
+./Corewar/__init__.py
 Corewar/__init__.py
 Corewar.egg-info/PKG-INFO
 Corewar.egg-info/SOURCES.txt
