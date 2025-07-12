@@ -14,7 +14,54 @@ At the moment the following features are supported:
 
 You need Python 3.6 or newer and a recent version of GCC for compiling PyCorewar.
 
+## Usage Example
+
+Here's a simple example of using PyCorewar to parse and run a Redcode warrior:
+
+```python
+import Corewar
+
+# Create a parser
+parser = Corewar.Parser()
+
+# Parse a simple warrior
+warrior_code = """
+;redcode
+;name Imp
+;author A.K. Dewdney
+;strategy Move 0 instruction continuously.
+;assert CORESIZE == 8000
+
+mov 0, 1
+end
+"""
+
+# Parse the warrior code
+warrior = parser.parse(warrior_code)
+
+if warrior.has_errors:
+    for error in warrior.errors:
+        print(f"Error: {error}")
+else:
+    print(f"Warrior Name: {warrior.name}")
+    print(f"Author: {warrior.author}")
+    print(f"Strategy: {warrior.strategy}")
+
+    # Access the instructions
+    print("\nInstructions:")
+    for i, instruction in enumerate(warrior.instructions):
+        print(f"{i}: {instruction}")
+```
+
 ## How to build and install
+
+There are several ways to build and install PyCorewar, depending on your needs:
+
+| Build Method | Use Case | Advantages | Limitations |
+|--------------|----------|------------|-------------|
+| pip install | General use | Easy, standard | Less control over compilation |
+| Manual build | Custom builds | Full control over flags | Must set up Python path |
+| Virtual env | Development | Isolated environment | Setup overhead |
 
 ### Using pip (recommended)
 
@@ -44,24 +91,124 @@ pip install -e .
 deactivate
 ```
 
+### Manual compilation (without setuptools)
+
+The project includes a standalone build script that allows you to compile the C extensions directly:
+
+```bash
+# Basic build
+./build.py
+
+# Build with more information
+./build.py --verbose
+
+# Build with custom output directory
+./build.py --output-dir my_corewar_dir
+
+# Use environment variables for custom flags
+PYCOREWAR_CFLAGS="-O2" PYCOREWAR_LDFLAGS="-lm" ./build.py --use-env
+```
+
+After building, you can import the modules as follows:
+
+```python
+import sys
+import os
+# Add the directory containing the corewar package to your Python path
+sys.path.insert(0, '/path/to/pycorewar')
+
+# Import the modules
+from Corewar import Redcode, Benchmarking, Optimizing
+```
+
 ### Legacy method (not recommended)
+
+The old setup.py commands still work but are deprecated in modern Python:
 
 ```bash
 python3 setup.py build
 python3 setup.py install
 ```
 
+### Selecting the Right Build Method
+
+- **For normal usage**: Use the pip installation method
+- **For development**: Use a virtual environment with pip install -e
+- **For customized builds**: Use the manual build script
+- **For CI/CD pipelines**: Use pip with environment variables for configuration
+
 ## Bug reports
 
 Please send any bug reports to [jens@gutzeit.name](mailto:jens@gutzeit.name).
 
-## Note on Python Packaging
+## Performance Considerations
+
+The C extensions in PyCorewar are optimized for speed. The manual build process allows you to customize compiler flags for your specific hardware architecture, which may result in better performance.
+
+For maximum performance:
+- Use the manual build script with platform-specific optimization flags
+- Consider using `-march=native` on your own hardware (not for distributable packages)
+- Benchmark different compiler flag combinations for your specific use case
+
+## Notes on Python Packaging
 
 This package uses modern Python packaging with `pyproject.toml`. If you encounter any packaging issues, make sure you have the latest version of pip and setuptools:
 
 ```bash
 pip install --upgrade pip setuptools wheel
 ```
+
+### Environment Variables
+
+The build process can be controlled with the following environment variables:
+
+- `PYCOREWAR_MANUAL_BUILD`: Set to "1", "true", or "yes" to use the manual build process when installing with pip
+- `PYCOREWAR_CFLAGS`: Additional C compiler flags (only used with `--use-env` flag for manual build)
+- `PYCOREWAR_LDFLAGS`: Additional linker flags (only used with `--use-env` flag for manual build)
+- `PYCOREWAR_OUTPUT_DIR`: Custom output directory for compiled modules (only used with `--use-env` flag for manual build)
+
+Example:
+```bash
+PYCOREWAR_MANUAL_BUILD=1 pip install .
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Import Errors
+
+If you encounter `ImportError: No module named 'Corewar'`, check:
+- The modules were compiled correctly (check the `Corewar` directory)
+- Your Python path includes the directory containing the `Corewar` package
+
+#### Compilation Errors
+
+- **Missing Python.h**: Ensure you have Python development headers installed:
+  - Ubuntu/Debian: `sudo apt-get install python3-dev`
+  - Fedora/RHEL: `sudo dnf install python3-devel`
+  - macOS: Install Xcode Command Line Tools with `xcode-select --install`
+
+- **Missing compiler**: Ensure GCC or Clang is installed:
+  - Ubuntu/Debian: `sudo apt-get install gcc`
+  - Fedora/RHEL: `sudo dnf install gcc`
+  - macOS: Install Xcode Command Line Tools
+
+#### macOS Specific Issues
+
+If you see many warnings about "nullability" on macOS, these can be safely ignored. They're related to the system headers and don't affect the functionality of PyCorewar.
+
+### Testing Your Installation
+
+You can verify your installation with:
+
+```python
+python -c "from Corewar import Redcode; print('Successfully imported Redcode module')"
+```
+
+## Documentation
+
+For more detailed information about the API and examples, please check the `Documentation` directory and the example scripts in the `examples` directory.
 
 ## Thanks
 

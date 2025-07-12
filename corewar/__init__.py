@@ -185,6 +185,8 @@ class SimpleParser(object):
         if fsize > maxsize:
             raise WarriorParseError("Code of warrior is too long.", 0)
         data = f.read(maxsize)
+        # convert data to string
+        data = data.decode('utf-8')
         f.close()
 
         return self.parse(data, maxsize)

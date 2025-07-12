@@ -9,7 +9,7 @@ set -e  # Exit on error
 PYTHON_INCLUDE=$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))")
 PYTHON_PLATINCLUDE=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('PLATINCLUDE') or '')")
 EXTENSION_SUFFIX=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
-OUTPUT_DIR="corewar"
+OUTPUT_DIR="Corewar"
 
 # Ensure output directory exists
 mkdir -p ${OUTPUT_DIR}
@@ -72,4 +72,4 @@ gcc ${CFLAGS} ${LDFLAGS} -shared -o ${OUTPUT_DIR}/Optimizing${EXTENSION_SUFFIX} 
 }
 
 echo "Compilation complete. Extension modules are in ${OUTPUT_DIR}/"
-echo "To use these modules, you can import them with: 'from corewar import Redcode, Benchmarking, Optimizing'"
+echo "To use these modules, you can import them with: 'from Corewar import Redcode, Benchmarking, Optimizing'"
